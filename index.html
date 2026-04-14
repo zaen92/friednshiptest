@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 어떤 친구일까 — 친구 궁합 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --ink: #1C1B18;
+  --muted: #8C8880;
+  --faint: #E5E2DB;
+  --border: #DEDAD2;
+
+  --T1: #3D6B8E; --T1l: #EBF1F7; /* 든든한 버팀목 — 네이비 */
+  --T2: #C0622A; --T2l: #FBF0EA; /* 에너지 메이커 — 오렌지 */
+  --T3: #5B8C5A; --T3l: #EDF5ED; /* 힐링 숲속 요정 — 그린 */
+  --T4: #9B59B6; --T4l: #F5EEF8; /* 공감 마스터 — 퍼플 */
+  --T5: #B8860B; --T5l: #FDF8E7; /* 인생 계획러 — 골드 */
+  --T6: #C0392B; --T6l: #FDECEA; /* 직진 팩트봄 — 레드 */
+  --T7: #1A8C82; --T7l: #E8F7F6; /* 분위기 메이커 — 틸 */
+  --T8: #7D6E8A; --T8l: #F3F0F6; /* 철학 탐구자 — 모브 */
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+
+
+/* ─── COVER Y2K ─── */
+#cover {
+  min-height: 100vh;
+  background: #0A0A0A;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 2rem 1.5rem;
+  position: relative; overflow: hidden;
+  color: #fff;
+}
+
+/* 격자 배경 */
+.cover-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* 형광 글로우 오브 */
+.cover-orb {
+  position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+}
+.orb1 { width: 500px; height: 500px; background: #FF2D78; opacity: 0.18; top: -180px; right: -160px; }
+.orb2 { width: 400px; height: 400px; background: #00FFB2; opacity: 0.12; bottom: -140px; left: -120px; }
+.orb3 { width: 260px; height: 260px; background: #B400FF; opacity: 0.14; top: 45%; left: 5%; }
+.orb4 { width: 200px; height: 200px; background: #FFE500; opacity: 0.10; top: 20%; right: 5%; }
+
+/* 픽셀 데코 도트 */
+.cover-dots {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+
+.px-dot {
+  position: absolute; width: 6px; height: 6px;
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+}
+
+/* 스캔라인 */
+.cover-scan {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px
+  );
+}
+
+/* 타이틀 영역 */
+.cover-eyebrow {
+  font-family: 'DotGothic16', monospace;
+  font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: #00FFB2; margin-bottom: 1.5rem; position: relative;
+  text-shadow: 0 0 12px #00FFB2;
+}
+
+.cover-sticker-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; margin-bottom: 0.5rem; position: relative;
+}
+
+.sticker {
+  font-size: 1.6rem;
+  animation: wiggle 3s ease-in-out infinite;
+}
+.sticker:nth-child(2) { animation-delay: -1s; }
+.sticker:nth-child(3) { animation-delay: -2s; }
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-6deg) scale(1); }
+  50%       { transform: rotate(6deg) scale(1.1); }
+}
+
+.cover-title-y2k {
+  position: relative; margin-bottom: 0.25rem;
+  line-height: 1;
+}
+
+.cover-title-y2k .main-word {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(4.5rem, 16vw, 9rem);
+  letter-spacing: -0.02em;
+  display: block;
+  background: linear-gradient(135deg, #FF2D78 0%, #FF9500 35%, #FFE500 60%, #00FFB2 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(255,45,120,0.4));
+  animation: gradShift 4s ease infinite alternate;
+  background-size: 200%;
+}
+
+@keyframes gradShift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.cover-title-y2k .sub-word {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
+  color: #fff;
+  display: block;
+  letter-spacing: 0.08em;
+  text-shadow: 3px 3px 0 #FF2D78, 6px 6px 0 rgba(255,45,120,0.3);
+}
+
+/* 글리치 효과 */
+.cover-title-y2k .main-word::before {
+  content: attr(data-text);
+  position: absolute; left: 2px; top: 0;
+  background: linear-gradient(135deg, #00FFB2, #B400FF);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+  opacity: 0;
+  animation: glitch 5s infinite;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { opacity: 0; transform: translateX(0); }
+  92%            { opacity: 0.7; transform: translateX(-4px); }
+  94%            { opacity: 0.7; transform: translateX(4px); }
+  96%            { opacity: 0; }
+}
+
+.cover-tagline {
+  font-family: 'DotGothic16', monospace;
+  font-size: 13px; color: rgba(255,255,255,0.55);
+  letter-spacing: 0.05em; margin-bottom: 2rem; position: relative;
+}
+
+/* 유형 카드 그리드 */
+.type-card-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; max-width: 420px; width: 100%;
+  margin-bottom: 2rem; position: relative;
+}
+
+@media (max-width: 420px) {
+  .type-card-grid { grid-template-columns: repeat(2, 1fr); max-width: 280px; }
+}
+
+.type-card-y2k {
+  border: 1px solid; border-radius: 8px;
+  padding: 7px 6px; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.01em; line-height: 1.3;
+  position: relative; overflow: hidden;
+  transition: transform 0.15s;
+  cursor: default;
+}
+
+.type-card-y2k:hover { transform: translateY(-2px) scale(1.04); }
+
+.type-card-y2k::before {
+  content: ''; position: absolute; inset: 0;
+  background: inherit; opacity: 0.12; border-radius: inherit;
+}
+
+.type-card-y2k .tc-emoji { font-size: 1.1rem; display: block; margin-bottom: 3px; }
+.type-card-y2k .tc-name { display: block; position: relative; }
+
+/* 시작 버튼 */
+.start-btn {
+  position: relative; border: none; cursor: pointer;
+  padding: 0; border-radius: 12px; overflow: hidden;
+  transition: transform 0.15s; margin-bottom: 0;
+}
+
+.start-btn:hover { transform: scale(1.05); }
+.start-btn:active { transform: scale(0.97); }
+
+.btn-inner {
+  display: block; padding: 16px 52px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 17px; letter-spacing: 0.06em; color: #0A0A0A;
+  background: linear-gradient(90deg, #FFE500, #FF9500, #FF2D78, #B400FF, #00FFB2, #FFE500);
+  background-size: 300%;
+  animation: btnGrad 3s linear infinite;
+  position: relative; z-index: 1;
+}
+
+@keyframes btnGrad {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.cover-count {
+  position: relative; margin-top: 1.25rem;
+  font-family: 'DotGothic16', monospace;
+  font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.12em;
+}
+#quiz { display: none; min-height: 100vh; background: var(--bg); }
+
+.quiz-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(245,243,238,0.93); backdrop-filter: blur(12px);
+  padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.q-progress-bar { flex: 1; height: 3px; background: var(--faint); border-radius: 999px; overflow: hidden; }
+.q-progress-fill { height: 100%; background: var(--T2); border-radius: 999px; transition: width 0.4s ease; width: 0%; }
+
+.q-num { font-size: 12px; color: var(--muted); font-weight: 500; min-width: 48px; text-align: right; }
+.q-num span { color: var(--ink); font-weight: 700; }
+
+.q-card {
+  display: none; min-height: calc(100vh - 56px);
+  flex-direction: column; justify-content: center;
+  padding: 3rem 1.5rem; max-width: 620px; margin: 0 auto;
+  animation: fadeUp 0.3s ease both;
+}
+
+.q-card.active { display: flex; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-situation {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 0.75rem; font-weight: 500;
+}
+
+.q-text {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(1.2rem, 4vw, 1.65rem);
+  line-height: 1.35; margin-bottom: 0.5rem; color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.q-sub { font-size: 13px; color: var(--muted); font-weight: 300; margin-bottom: 2rem; line-height: 1.6; }
+
+.options { display: flex; flex-direction: column; gap: 9px; }
+
+.opt-btn {
+  background: var(--surface); border: 1.5px solid var(--border);
+  color: var(--ink); padding: 15px 18px; font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+  text-align: left; cursor: pointer; border-radius: 10px;
+  transition: all 0.17s; display: flex; align-items: flex-start;
+  gap: 12px; line-height: 1.6;
+}
+
+.opt-dot {
+  width: 8px; height: 8px; min-width: 8px; border-radius: 50%;
+  border: 2px solid var(--border); margin-top: 6px;
+  transition: all 0.17s; flex-shrink: 0;
+}
+
+.opt-btn:hover { border-color: var(--T2); background: var(--T2l); }
+.opt-btn:hover .opt-dot { border-color: var(--T2); background: var(--T2); }
+.opt-btn.selected { border-color: var(--T2); background: var(--T2l); }
+.opt-btn.selected .opt-dot { border-color: var(--T2); background: var(--T2); }
+
+/* ─── RESULT ─── */
+#result { display: none; background: var(--bg); }
+
+.result-hero {
+  padding: 5rem 1.5rem 3.5rem; text-align: center;
+  position: relative; overflow: hidden; border-bottom: 1px solid var(--border);
+}
+
+.hero-bg-fill {
+  position: absolute; inset: 0; opacity: 0.08; transition: background 0.5s;
+}
+
+.result-eyebrow {
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1rem; position: relative;
+}
+
+.result-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 5px 16px; border-radius: 999px; margin-bottom: 1.25rem;
+  font-weight: 700; position: relative; border: 1.5px solid;
+}
+
+.result-emoji { font-size: 4rem; display: block; margin-bottom: 0.75rem; position: relative; }
+
+.result-name {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(2.5rem, 9vw, 5rem);
+  line-height: 1; margin-bottom: 0.75rem;
+  position: relative; letter-spacing: -0.01em;
+}
+
+.result-en {
+  font-size: 13px; color: var(--muted); letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 1rem; position: relative;
+}
+
+.result-desc {
+  font-size: 13px; color: var(--muted); font-weight: 300;
+  line-height: 1.9; max-width: 380px; margin: 0 auto; position: relative;
+}
+
+/* 섹션 공통 */
+.section-wrap { max-width: 620px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+.section-label {
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1.5rem; padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border); font-weight: 700;
+}
+
+.sec-gap { height: 1px; background: var(--border); max-width: 620px; margin: 0 auto; }
+
+/* 점수 바 */
+.score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.score-label-wrap { display: flex; align-items: center; gap: 6px; min-width: 120px; }
+.score-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.score-label { font-size: 12px; font-weight: 500; }
+.score-track { flex: 1; height: 5px; background: var(--faint); border-radius: 999px; overflow: hidden; }
+.score-fill { height: 100%; border-radius: 999px; width: 0%; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+.score-val { font-size: 11px; font-weight: 700; min-width: 32px; text-align: right; }
+
+/* 키워드 태그 */
+.keyword-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.keyword-tag { font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 999px; border: 1.5px solid; }
+
+/* 궁합 그리드 */
+.compat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.compat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.25rem;
+}
+
+.compat-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-weight: 700; }
+.compat-name { font-family: 'Black Han Sans', sans-serif; font-size: 1.1rem; margin-bottom: 4px; }
+.compat-desc { font-size: 11px; color: var(--muted); font-weight: 300; line-height: 1.6; }
+
+/* 우정 조언 */
+.advice-list { display: flex; flex-direction: column; }
+.advice-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.advice-item:last-child { border-bottom: none; }
+.advice-icon { font-size: 1rem; min-width: 20px; margin-top: 2px; }
+.advice-text { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.7; }
+.advice-text strong { color: var(--ink); font-weight: 500; }
+
+/* 이런 친구 찾아요 */
+.find-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+.find-box p { font-size: 13px; color: var(--muted); line-height: 1.9; font-weight: 300; }
+.find-box p strong { color: var(--ink); font-weight: 500; }
+
+/* 재시작 */
+.restart-section { text-align: center; padding: 2rem 1.5rem 5rem; }
+.restart-btn {
+  background: transparent; border: 1.5px solid var(--border);
+  color: var(--muted); padding: 12px 32px; font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  border-radius: 999px; transition: all 0.15s;
+}
+.restart-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+@media (max-width: 480px) {
+  .compat-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER Y2K ══════════ -->
+<section id="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-scan"></div>
+
+  <!-- 글로우 오브 -->
+  <div class="cover-orb orb1"></div>
+  <div class="cover-orb orb2"></div>
+  <div class="cover-orb orb3"></div>
+  <div class="cover-orb orb4"></div>
+
+  <!-- 픽셀 도트 -->
+  <div class="cover-dots">
+    <div class="px-dot" style="top:12%;left:8%;background:#FF2D78;animation-delay:0s"></div>
+    <div class="px-dot" style="top:18%;right:12%;background:#00FFB2;animation-delay:-0.5s"></div>
+    <div class="px-dot" style="top:75%;left:15%;background:#FFE500;animation-delay:-1s"></div>
+    <div class="px-dot" style="top:65%;right:8%;background:#B400FF;animation-delay:-1.5s"></div>
+    <div class="px-dot" style="top:40%;left:4%;background:#FF9500;animation-delay:-0.3s;width:10px;height:10px"></div>
+    <div class="px-dot" style="top:85%;right:20%;background:#FF2D78;animation-delay:-0.8s;width:4px;height:4px"></div>
+    <div class="px-dot" style="top:30%;right:4%;background:#FFE500;animation-delay:-1.2s;width:8px;height:8px"></div>
+    <div class="px-dot" style="top:55%;left:7%;background:#00FFB2;animation-delay:-1.8s;width:4px;height:4px"></div>
+  </div>
+
+  <p class="cover-eyebrow">✦ Friendship Personality Test ✦</p>
+
+  <div class="cover-sticker-row">
+    <span class="sticker">💫</span>
+    <span class="sticker">👾</span>
+    <span class="sticker">💫</span>
+  </div>
+
+  <div class="cover-title-y2k">
+    <span class="main-word" data-text="친구궁합">친구궁합</span>
+    <span class="sub-word">나는 어떤 친구일까?</span>
+  </div>
+
+  <p class="cover-tagline">20개의 선택 → 8가지 우정 유형 분석</p>
+
+  <!-- 유형 카드 그리드 -->
+  <div class="type-card-grid">
+    <div class="type-card-y2k" style="color:#6AAFD4;border-color:#3D6B8E;background:#3D6B8E">
+      <span class="tc-emoji">🪨</span><span class="tc-name">든든한 버팀목</span>
+    </div>
+    <div class="type-card-y2k" style="color:#FFAD7A;border-color:#C0622A;background:#C0622A">
+      <span class="tc-emoji">⚡</span><span class="tc-name">에너지 메이커</span>
+    </div>
+    <div class="type-card-y2k" style="color:#8FCC8E;border-color:#5B8C5A;background:#5B8C5A">
+      <span class="tc-emoji">🌿</span><span class="tc-name">힐링 요정</span>
+    </div>
+    <div class="type-card-y2k" style="color:#CC99E0;border-color:#9B59B6;background:#9B59B6">
+      <span class="tc-emoji">🫂</span><span class="tc-name">공감 마스터</span>
+    </div>
+    <div class="type-card-y2k" style="color:#FFCF47;border-color:#B8860B;background:#B8860B">
+      <span class="tc-emoji">📋</span><span class="tc-name">인생 계획러</span>
+    </div>
+    <div class="type-card-y2k" style="color:#F1948A;border-color:#C0392B;background:#C0392B">
+      <span class="tc-emoji">🎯</span><span class="tc-name">직진 팩트봄</span>
+    </div>
+    <div class="type-card-y2k" style="color:#76D7CE;border-color:#1A8C82;background:#1A8C82">
+      <span class="tc-emoji">🎉</span><span class="tc-name">분위기 메이커</span>
+    </div>
+    <div class="type-card-y2k" style="color:#C3A8D1;border-color:#7D6E8A;background:#7D6E8A">
+      <span class="tc-emoji">🔭</span><span class="tc-name">철학 탐구자</span>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startQuiz()">
+    <span class="btn-inner">테스트 시작하기</span>
+  </button>
+  <p class="cover-count">TOTAL 20Q · EST. 3MIN</p>
+</section>
+
+<!-- ══════════ QUIZ ══════════ -->
+<section id="quiz">
+  <div class="quiz-header">
+    <div class="q-progress-bar"><div class="q-progress-fill" id="q-fill"></div></div>
+    <div class="q-num"><span id="q-current">1</span> / 20</div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1">
+    <div class="q-situation">연락 스타일</div>
+    <div class="q-text">친구한테서 "나 요즘 좀 힘들어"라는 카톡이 왔어요. 나는?</div>
+    <div class="q-sub">친구의 SOS 신호에 내가 가장 먼저 하는 행동은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(1,'T1')"><div class="opt-dot"></div>"지금 어디야? 나 갈게" — 바로 달려감</button>
+      <button class="opt-btn" onclick="answer(1,'T4')"><div class="opt-dot"></div>전화해서 처음부터 끝까지 들어줌. 해결보다 공감이 먼저</button>
+      <button class="opt-btn" onclick="answer(1,'T6')"><div class="opt-dot"></div>"뭐가 문제야? 상황 말해봐" — 원인 파악하고 해결책 찾아줌</button>
+      <button class="opt-btn" onclick="answer(1,'T7')"><div class="opt-dot"></div>"일단 나와. 맛있는 거 먹으면서 얘기하자" — 분위기 전환 먼저</button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2">
+    <div class="q-situation">약속 스타일</div>
+    <div class="q-text">친구들이랑 약속 잡을 때 나는?</div>
+    <div class="q-sub">모임 기획에서 내 역할은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(2,'T5')"><div class="opt-dot"></div>장소·시간·메뉴까지 내가 다 조사해서 카톡방에 올림</button>
+      <button class="opt-btn" onclick="answer(2,'T7')"><div class="opt-dot"></div>분위기 좋은 곳 섭외는 내가 제일 잘함. 일단 분위기부터</button>
+      <button class="opt-btn" onclick="answer(2,'T3')"><div class="opt-dot"></div>남들이 정해준 대로 잘 따라감. 어디든 함께면 됨</button>
+      <button class="opt-btn" onclick="answer(2,'T2')"><div class="opt-dot"></div>"그냥 만나서 결정하자!" 즉흥이 훨씬 재미있으니까</button>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" id="q3">
+    <div class="q-situation">우정의 정의</div>
+    <div class="q-text">나한테 진짜 친구란 어떤 존재예요?</div>
+    <div class="q-sub">우정에서 가장 중요하게 생각하는 것은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(3,'T1')"><div class="opt-dot"></div>어떤 상황에서도 내 편이 돼주는 사람</button>
+      <button class="opt-btn" onclick="answer(3,'T3')"><div class="opt-dot"></div>같이 있으면 마음이 편해지는 사람</button>
+      <button class="opt-btn" onclick="answer(3,'T8')"><div class="opt-dot"></div>나를 더 깊이 이해하고 성장하게 해주는 사람</button>
+      <button class="opt-btn" onclick="answer(3,'T7')"><div class="opt-dot"></div>같이 있으면 항상 웃게 되는 사람</button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" id="q4">
+    <div class="q-situation">단체 모임</div>
+    <div class="q-text">오랜만에 친구들이랑 모임이 있어요. 거기서 나는?</div>
+    <div class="q-sub">단체 자리에서 자연스러운 내 모습은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(4,'T7')"><div class="opt-dot"></div>분위기 주도하고 웃음 포인트 던지는 게 자연스러움</button>
+      <button class="opt-btn" onclick="answer(4,'T4')"><div class="opt-dot"></div>각자 어떻게 지냈는지 세심하게 물어보고 리액션 잘 함</button>
+      <button class="opt-btn" onclick="answer(4,'T8')"><div class="opt-dot"></div>깊은 얘기 나올 때 진짜 눈 빛나기 시작함</button>
+      <button class="opt-btn" onclick="answer(4,'T3')"><div class="opt-dot"></div>조용히 분위기 즐기면서 필요할 때 한 마디씩 함</button>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" id="q5">
+    <div class="q-situation">친구의 실수</div>
+    <div class="q-text">친구가 분명히 잘못한 상황인데 본인은 모르고 있어요. 나는?</div>
+    <div class="q-sub">친구의 잘못을 발견했을 때 내 반응은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(5,'T6')"><div class="opt-dot"></div>좀 불편해도 직접 말해줌. 모르면 더 손해니까</button>
+      <button class="opt-btn" onclick="answer(5,'T1')"><div class="opt-dot"></div>타이밍 봐서 살짝 귀띔해줌. 상처받지 않게 조심스럽게</button>
+      <button class="opt-btn" onclick="answer(5,'T3')"><div class="opt-dot"></div>말하기 애매해서 일단 지켜봄. 혼자 알아채길 기다림</button>
+      <button class="opt-btn" onclick="answer(5,'T8')"><div class="opt-dot"></div>왜 그랬는지 먼저 물어보고 이해하려고 함</button>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" id="q6">
+    <div class="q-situation">취미 공유</div>
+    <div class="q-text">좋아하는 게 생기면?</div>
+    <div class="q-sub">새로운 관심사가 생겼을 때 친구들과 어떻게 해요?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(6,'T2')"><div class="opt-dot"></div>바로 단톡방에 공유. "나 이거 완전 빠졌음 같이 해보자"</button>
+      <button class="opt-btn" onclick="answer(6,'T8')"><div class="opt-dot"></div>혼자 깊게 파다가 진짜 잘 알게 되면 그때 얘기함</button>
+      <button class="opt-btn" onclick="answer(6,'T5')"><div class="opt-dot"></div>관련 정보 정리해서 친구들한테 추천해줌. 같이 하면 더 재밌으니까</button>
+      <button class="opt-btn" onclick="answer(6,'T3')"><div class="opt-dot"></div>친구가 먼저 관심 보이면 같이 하고, 아니면 혼자 즐김</button>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-card" id="q7">
+    <div class="q-situation">고민 상담</div>
+    <div class="q-text">친구가 진지한 고민을 털어놨어요. 나는?</div>
+    <div class="q-sub">친구의 깊은 고민을 들을 때 내 자연스러운 반응은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(7,'T4')"><div class="opt-dot"></div>"얼마나 힘들었어..." 감정에 충분히 공감하고 같이 느낌</button>
+      <button class="opt-btn" onclick="answer(7,'T6')"><div class="opt-dot"></div>현실적인 해결책 제시. 감정 공감보다 실질적 도움이 진짜라고 생각</button>
+      <button class="opt-btn" onclick="answer(7,'T8')"><div class="opt-dot"></div>왜 그런 상황이 됐는지 깊게 얘기 나누면서 함께 생각함</button>
+      <button class="opt-btn" onclick="answer(7,'T1')"><div class="opt-dot"></div>"내가 뭐든 도와줄게" — 실질적으로 뭔가 해주고 싶음</button>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-card" id="q8">
+    <div class="q-situation">연락 빈도</div>
+    <div class="q-text">친구랑 연락 얼마나 자주 해요?</div>
+    <div class="q-sub">평소 친구들과의 연락 패턴은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(8,'T2')"><div class="opt-dot"></div>생각날 때마다 바로 연락. 별 이유 없어도 자주 함</button>
+      <button class="opt-btn" onclick="answer(8,'T1')"><div class="opt-dot"></div>자주 하진 않아도 필요할 때 연락하면 항상 있어줌</button>
+      <button class="opt-btn" onclick="answer(8,'T5')"><div class="opt-dot"></div>정기적으로 연락하는 편. 한 번 만나면 다음 약속도 잡음</button>
+      <button class="opt-btn" onclick="answer(8,'T8')"><div class="opt-dot"></div>뜸하게 연락하지만 만나면 바로 어제 본 것처럼 편함</button>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" id="q9">
+    <div class="q-situation">친구의 자랑</div>
+    <div class="q-text">친구가 좋은 소식을 들고 왔어요. 나는?</div>
+    <div class="q-sub">친구가 잘 됐을 때 내 반응은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(9,'T2')"><div class="opt-dot"></div>"진짜?! 대박이다!!!" 같이 완전 흥분해서 기뻐함</button>
+      <button class="opt-btn" onclick="answer(9,'T4')"><div class="opt-dot"></div>얼마나 힘들었는지 알아서 진심으로 감격함. 눈물 날 것 같음</button>
+      <button class="opt-btn" onclick="answer(9,'T5')"><div class="opt-dot"></div>축하하고 나서 앞으로 어떻게 할 건지 같이 고민해줌</button>
+      <button class="opt-btn" onclick="answer(9,'T7')"><div class="opt-dot"></div>"이건 무조건 파티다!" 바로 축하 자리 기획 시작</button>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q-card" id="q10">
+    <div class="q-situation">갈등 상황</div>
+    <div class="q-text">친구랑 사소한 오해로 불편한 상황이 생겼어요. 나는?</div>
+    <div class="q-sub">친구와의 갈등을 어떻게 해결해요?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(10,'T6')"><div class="opt-dot"></div>바로 얘기함. 쌓아두면 더 커지니까 빨리 풀어야 함</button>
+      <button class="opt-btn" onclick="answer(10,'T4')"><div class="opt-dot"></div>상대방 기분 먼저 헤아리고 타이밍 봐서 조심스럽게 풀어냄</button>
+      <button class="opt-btn" onclick="answer(10,'T3')"><div class="opt-dot"></div>좀 불편해도 시간 지나면 자연스럽게 풀리길 기다림</button>
+      <button class="opt-btn" onclick="answer(10,'T8')"><div class="opt-dot"></div>오해가 생긴 이유를 먼저 이해하려고 대화를 깊게 함</button>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q-card" id="q11">
+    <div class="q-situation">여행 중에</div>
+    <div class="q-text">친구들이랑 여행 중. 나는 어떤 역할이에요?</div>
+    <div class="q-sub">여행에서 자연스럽게 맡게 되는 역할은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(11,'T5')"><div class="opt-dot"></div>일정 관리, 지도, 예약 확인 — 총무 겸 계획 담당</button>
+      <button class="opt-btn" onclick="answer(11,'T2')"><div class="opt-dot"></div>"저기 가보자!" 새로운 거 발견하고 일행 이끌고 달려가는 역할</button>
+      <button class="opt-btn" onclick="answer(11,'T3')"><div class="opt-dot"></div>분위기 맞춰주고 힘든 사람 옆에서 챙기는 역할</button>
+      <button class="opt-btn" onclick="answer(11,'T7')"><div class="opt-dot"></div>사진 찍고 분위기 살리고 재밌는 거 제안하는 역할</button>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q-card" id="q12">
+    <div class="q-situation">선물 스타일</div>
+    <div class="q-text">친구 생일 선물, 어떻게 골라요?</div>
+    <div class="q-sub">선물 고를 때 내 방식은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(12,'T4')"><div class="opt-dot"></div>평소에 뭐 필요하다고 했는지 기억해뒀다가 그걸로 함</button>
+      <button class="opt-btn" onclick="answer(12,'T5')"><div class="opt-dot"></div>미리 예산 정하고 리스트 만들어서 최선의 선물 고름</button>
+      <button class="opt-btn" onclick="answer(12,'T7')"><div class="opt-dot"></div>재미있는 경험형 선물. 같이 뭔가 하는 게 더 좋음</button>
+      <button class="opt-btn" onclick="answer(12,'T1')"><div class="opt-dot"></div>진심 담긴 카드 + 실용적인 거. 화려하지 않아도 마음이 중요</button>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q-card" id="q13">
+    <div class="q-situation">우정의 깊이</div>
+    <div class="q-text">친구가 많은 편이에요, 적은 편이에요?</div>
+    <div class="q-sub">나의 우정 스타일은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(13,'T2')"><div class="opt-dot"></div>아는 사람 많고 친구도 많음. 새 사람 만나는 것 자체가 재밌음</button>
+      <button class="opt-btn" onclick="answer(13,'T1')"><div class="opt-dot"></div>적지만 진한 친구들. 한 번 친해지면 평생 감</button>
+      <button class="opt-btn" onclick="answer(13,'T8')"><div class="opt-dot"></div>소수 정예. 깊이 있는 관계가 아니면 굳이 유지 안 함</button>
+      <button class="opt-btn" onclick="answer(13,'T3')"><div class="opt-dot"></div>적당히 가까운 친구들. 편한 사람들이랑만 만남</button>
+    </div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="q-card" id="q14">
+    <div class="q-situation">분위기 파악</div>
+    <div class="q-text">단체 카톡방 분위기가 갑자기 무거워졌어요. 나는?</div>
+    <div class="q-sub">어색한 분위기가 흐를 때 내가 하는 행동은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(14,'T7')"><div class="opt-dot"></div>웃긴 짤이나 개그 날려서 분위기 환기시킴</button>
+      <button class="opt-btn" onclick="answer(14,'T4')"><div class="opt-dot"></div>왜 갑자기 분위기가 바뀐 건지 파악하려고 눈치 봄</button>
+      <button class="opt-btn" onclick="answer(14,'T6')"><div class="opt-dot"></div>"뭐가 문제야? 그냥 말하자" 직접 물어봄</button>
+      <button class="opt-btn" onclick="answer(14,'T3')"><div class="opt-dot"></div>나서지 않고 상황이 자연스럽게 풀리길 기다림</button>
+    </div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="q-card" id="q15">
+    <div class="q-situation">나의 에너지</div>
+    <div class="q-text">사람 만나고 나면 어떤 느낌이에요?</div>
+    <div class="q-sub">친구들을 만난 후 내 에너지 상태는?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(15,'T2')"><div class="opt-dot"></div>충전됨. 사람 에너지 받으면 오히려 더 활기차짐</button>
+      <button class="opt-btn" onclick="answer(15,'T3')"><div class="opt-dot"></div>좋았지만 집에 오면 혼자 쉬고 싶어짐</button>
+      <button class="opt-btn" onclick="answer(15,'T8')"><div class="opt-dot"></div>인원 많을수록 피곤함. 1:1이 훨씬 더 좋음</button>
+      <button class="opt-btn" onclick="answer(15,'T7')"><div class="opt-dot"></div>만남 자체가 너무 즐거워서 헤어지기 싫음</button>
+    </div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="q-card" id="q16">
+    <div class="q-situation">조언 스타일</div>
+    <div class="q-text">친구가 내 생각엔 분명히 잘못된 선택을 하려 해요. 나는?</div>
+    <div class="q-sub">친구의 결정에 반대 의견이 생겼을 때는?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(16,'T6')"><div class="opt-dot"></div>팩트 기반으로 왜 잘못된 선택인지 조목조목 설명함</button>
+      <button class="opt-btn" onclick="answer(16,'T1')"><div class="opt-dot"></div>한 번은 말해주고 결국 선택은 본인이 하도록 지켜봄</button>
+      <button class="opt-btn" onclick="answer(16,'T4')"><div class="opt-dot"></div>왜 그 선택을 하려는지 먼저 충분히 들어봄</button>
+      <button class="opt-btn" onclick="answer(16,'T5')"><div class="opt-dot"></div>더 좋은 대안이 있는지 같이 알아봄. 정보 제공이 먼저</button>
+    </div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="q-card" id="q17">
+    <div class="q-situation">SNS 속 나</div>
+    <div class="q-text">SNS에서 나는 어떤 편이에요?</div>
+    <div class="q-sub">소셜미디어에서의 나는?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(17,'T2')"><div class="opt-dot"></div>자주 올리고 친구들 게시물에 리액션도 잘 함</button>
+      <button class="opt-btn" onclick="answer(17,'T8')"><div class="opt-dot"></div>거의 안 씀. 생각이나 감정을 그렇게 공개적으로 올리는 게 불편함</button>
+      <button class="opt-btn" onclick="answer(17,'T7')"><div class="opt-dot"></div>재밌는 거 있으면 올리는 편. 팔로워들 반응 보는 게 재밌음</button>
+      <button class="opt-btn" onclick="answer(17,'T3')"><div class="opt-dot"></div>보는 건 자주 하는데 올리는 건 잘 안 함</button>
+    </div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="q-card" id="q18">
+    <div class="q-situation">나만의 공간</div>
+    <div class="q-text">나에게 진짜 쉬는 시간이란?</div>
+    <div class="q-sub">충전이 되는 나만의 시간은?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(18,'T3')"><div class="opt-dot"></div>아무것도 안 하고 조용히 혼자 있는 것</button>
+      <button class="opt-btn" onclick="answer(18,'T5')"><div class="opt-dot"></div>밀린 계획 세우거나 정리하면서 뿌듯함 느끼는 것</button>
+      <button class="opt-btn" onclick="answer(18,'T8')"><div class="opt-dot"></div>책이나 영상 보면서 생각 깊게 하는 것</button>
+      <button class="opt-btn" onclick="answer(18,'T2')"><div class="opt-dot"></div>친구들이랑 신나게 놀거나 새로운 곳 가는 것</button>
+    </div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="q-card" id="q19">
+    <div class="q-situation">오랜 우정</div>
+    <div class="q-text">10년 이상 된 친구랑 오랜만에 만났어요. 어떤 얘기 해요?</div>
+    <div class="q-sub">오랜 친구를 만났을 때 자연스럽게 나오는 대화 주제는?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(19,'T7')"><div class="opt-dot"></div>옛날 웃겼던 얘기 꺼내면서 배꼽 잡고 웃음</button>
+      <button class="opt-btn" onclick="answer(19,'T4')"><div class="opt-dot"></div>그동안 어떻게 지냈는지 속 얘기까지 다 털어놓음</button>
+      <button class="opt-btn" onclick="answer(19,'T8')"><div class="opt-dot"></div>요즘 뭘 생각하는지, 어떻게 살고 싶은지 인생 얘기</button>
+      <button class="opt-btn" onclick="answer(19,'T5')"><div class="opt-dot"></div>요즘 어떻게 지내는지 근황 파악하고 앞으로 뭐 할 건지</button>
+    </div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="q-card" id="q20">
+    <div class="q-situation">우정의 본질</div>
+    <div class="q-text">친구에 대해 이게 제일 중요해요.</div>
+    <div class="q-sub">우정에서 절대 빠지면 안 되는 요소는?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(20,'T1')"><div class="opt-dot"></div>신뢰. 어떤 상황에서도 믿을 수 있는 사람이어야 함</button>
+      <button class="opt-btn" onclick="answer(20,'T4')"><div class="opt-dot"></div>공감. 내 감정을 알아주는 사람이어야 함</button>
+      <button class="opt-btn" onclick="answer(20,'T2')"><div class="opt-dot"></div>즐거움. 같이 있으면 무조건 재밌어야 함</button>
+      <button class="opt-btn" onclick="answer(20,'T8')"><div class="opt-dot"></div>성장. 만날수록 나를 더 나답게 만드는 사람이어야 함</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════ RESULT ══════════ -->
+<section id="result">
+
+  <div class="result-hero">
+    <div class="hero-bg-fill" id="hero-bg"></div>
+    <p class="result-eyebrow">당신의 우정 유형</p>
+    <div class="result-badge" id="result-badge"></div>
+    <span class="result-emoji" id="result-emoji"></span>
+    <div class="result-name" id="result-name"></div>
+    <div class="result-en" id="result-en"></div>
+    <p class="result-desc" id="result-desc"></p>
+  </div>
+
+  <!-- 점수 -->
+  <div class="section-wrap">
+    <div class="section-label">우정 성향 분석</div>
+    <div id="score-bars"></div>
+  </div>
+
+  <div class="sec-gap"></div>
+
+  <!-- 키워드 -->
+  <div class="section-wrap">
+    <div class="section-label">나의 우정 키워드</div>
+    <div class="keyword-tags" id="keyword-tags"></div>
+  </div>
+
+  <div class="sec-gap"></div>
+
+  <!-- 궁합 -->
+  <div class="section-wrap">
+    <div class="section-label">친구 궁합</div>
+    <div class="compat-grid">
+      <div class="compat-card">
+        <div class="compat-tag">💛 찰떡 궁합</div>
+        <div class="compat-name" id="best-name"></div>
+        <div class="compat-desc" id="best-desc"></div>
+      </div>
+      <div class="compat-card">
+        <div class="compat-tag">⚡ 의외로 잘 맞음</div>
+        <div class="compat-name" id="good-name"></div>
+        <div class="compat-desc" id="good-desc"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-gap"></div>
+
+  <!-- 이런 친구 찾아요 -->
+  <div class="section-wrap">
+    <div class="section-label">이런 친구랑 잘 맞아요</div>
+    <div class="find-box"><p id="find-text"></p></div>
+  </div>
+
+  <div class="sec-gap"></div>
+
+  <!-- 우정 조언 -->
+  <div class="section-wrap">
+    <div class="section-label">더 좋은 친구가 되려면</div>
+    <div class="advice-list" id="advice-list"></div>
+  </div>
+
+  <div class="restart-section">
+    <button class="restart-btn" onclick="restartTest()">다시 테스트하기</button>
+  </div>
+
+</section>
+
+<script>
+const TYPES = {
+  T1: {
+    name: '든든한 버팀목',
+    en: 'The Solid Rock',
+    emoji: '🪨',
+    color: '#3D6B8E',
+    light: '#EBF1F7',
+    keywords: ['신뢰가 전부', '조용한 충성심', '말보다 행동', '평생 친구형', '적지만 진한 우정'],
+    desc: '화려하진 않지만 가장 오래 남는 친구. 친구가 힘들 때 말보다 먼저 행동으로 보여주고, 한 번 믿으면 끝까지 가는 타입이에요. 드라마틱한 감정 표현은 없어도 존재 자체가 든든한 사람.',
+    best: '공감 마스터',
+    bestDesc: '내가 행동할 때 감정적으로 채워주니까 완벽한 팀이 됨',
+    good: '철학 탐구자',
+    goodDesc: '둘 다 조용하지만 깊은 대화 나올 때 잘 통함',
+    find: '<strong>말하지 않아도 알아주는 사람</strong>이 편해요. 과장 없이 솔직하고, 약속을 지키는 사람. 시간이 지나도 변하지 않는 <strong>한결같은 사람</strong>과 오래가요.',
+    advice: [
+      { icon: '🗣️', text: '<strong>가끔은 말로도 표현해줘요.</strong> 행동만으론 모를 수도 있어요.' },
+      { icon: '🤸', text: '<strong>새로운 친구에게도 문을 열어봐요.</strong> 방어막이 너무 두꺼우면 인연을 놓쳐요.' },
+      { icon: '💬', text: '<strong>당신도 힘들 때 말해도 돼요.</strong> 항상 강한 척하지 않아도 괜찮아요.' }
+    ]
+  },
+  T2: {
+    name: '에너지 메이커',
+    en: 'The Energy Booster',
+    emoji: '⚡',
+    color: '#C0622A',
+    light: '#FBF0EA',
+    keywords: ['무조건 긍정', '새 친구 well come', '즉흥의 신', '먼저 연락하는 편', '모임의 핵'],
+    desc: '같이 있으면 무조건 에너지가 올라가는 친구. 새로운 사람 만나는 것도 좋아하고, 분위기를 끌어올리는 게 자연스러운 타입이에요. 지루한 순간이 없고 항상 뭔가를 일으키는 사람.',
+    best: '분위기 메이커',
+    bestDesc: '둘이 만나면 에너지가 두 배. 무조건 재밌는 날 됨',
+    good: '힐링 숲속 요정',
+    goodDesc: '내가 과할 때 조용히 중심 잡아줘서 밸런스가 맞음',
+    find: '<strong>함께 있으면 신나는 사람</strong>이 좋아요. 새로운 도전을 겁내지 않고, 같이 웃을 수 있는 사람. <strong>내 에너지를 받아주는 사람</strong>과 잘 맞아요.',
+    advice: [
+      { icon: '👂', text: '<strong>가끔은 들어주는 역할도 해요.</strong> 에너지 받는 친구도 가끔 쉬고 싶을 때 있어요.' },
+      { icon: '🌱', text: '<strong>깊은 대화도 시도해봐요.</strong> 즐거움 너머의 관계가 오래가요.' },
+      { icon: '⏸️', text: '<strong>멈추는 것도 괜찮아요.</strong> 항상 신나야 한다는 압박 내려놓기.' }
+    ]
+  },
+  T3: {
+    name: '힐링 숲속 요정',
+    en: 'The Peaceful Healer',
+    emoji: '🌿',
+    color: '#5B8C5A',
+    light: '#EDF5ED',
+    keywords: ['갈등 극혐', '조용한 배려', '평화주의자', '눈치 빠름', '힐링 그 자체'],
+    desc: '같이 있으면 마음이 편안해지는 친구. 갈등을 싫어하고 모두가 편안하게 있도록 자연스럽게 챙기는 타입이에요. 큰소리 한 번 없지만 결정적인 순간에 제일 오래 남아있는 사람.',
+    best: '에너지 메이커',
+    bestDesc: '내가 조용할 때 분위기 만들어주니까 편하게 따라감',
+    good: '든든한 버팀목',
+    goodDesc: '둘 다 말은 없어도 서로 챙기는 따뜻한 관계',
+    find: '<strong>억지로 뭔가 하게 만들지 않는 사람</strong>이 좋아요. 조용히 있어도 어색하지 않고, 내 페이스를 존중해주는 사람. <strong>편안함 자체인 사람</strong>과 오래 가요.',
+    advice: [
+      { icon: '🙋', text: '<strong>가끔은 먼저 의견 내봐요.</strong> 항상 맞춰주다 보면 내 것이 없어져요.' },
+      { icon: '💪', text: '<strong>갈등을 피하지 말고 마주해봐요.</strong> 작은 오해도 말하면 쉽게 풀려요.' },
+      { icon: '✨', text: '<strong>당신의 존재 자체가 친구들한테 힐링이에요.</strong> 그걸 잊지 말아요.' }
+    ]
+  },
+  T4: {
+    name: '공감 마스터',
+    en: 'The Empathy Expert',
+    emoji: '🫂',
+    color: '#9B59B6',
+    light: '#F5EEF8',
+    keywords: ['공감 100점', '기억력 甲', '감정 레이더', '진심 리액션', '속 얘기 들어주는 친구'],
+    desc: '친구가 하는 말 하나하나를 진심으로 듣고 기억하는 타입. 감정 레이더가 예민해서 친구가 말하지 않아도 뭔가 이상하다는 걸 먼저 알아채요. 내 얘기를 해도 되는 친구.',
+    best: '든든한 버팀목',
+    bestDesc: '내가 감정 채울 때 행동으로 든든하게 받쳐줌',
+    good: '철학 탐구자',
+    goodDesc: '깊은 대화에서 서로 완전히 통하는 느낌이 남',
+    find: '<strong>감정을 나눌 수 있는 사람</strong>이 필요해요. 일상적인 얘기도 진지하게 들어주고, 내 감정에 반응해주는 사람. <strong>깊이 있는 관계를 귀하게 여기는 사람</strong>과 잘 맞아요.',
+    advice: [
+      { icon: '🛡️', text: '<strong>내 감정도 챙겨요.</strong> 다 받아주다 보면 당신이 먼저 지쳐요.' },
+      { icon: '🔋', text: '<strong>혼자만의 충전 시간도 필요해요.</strong> 공감하는 것도 에너지가 써요.' },
+      { icon: '😊', text: '<strong>가벼운 관계도 괜찮아요.</strong> 모든 관계가 깊어야 하는 건 아니에요.' }
+    ]
+  },
+  T5: {
+    name: '인생 계획러',
+    en: 'The Master Planner',
+    emoji: '📋',
+    color: '#B8860B',
+    light: '#FDF8E7',
+    keywords: ['준비성 만점', '정보력 갑', '모임 총무', '목표 지향적', '믿고 따르는 스타일'],
+    desc: '뭘 하든 준비가 철저하고 정보력이 탁월한 친구. 모임 계획, 여행 일정, 맛집 조사 — 이 친구한테 맡기면 일단 걱정이 없어요. 친구들이 편하게 즐길 수 있게 틀을 만들어주는 타입.',
+    best: '에너지 메이커',
+    bestDesc: '내가 짠 계획을 신나게 즐겨주니까 보람 있음',
+    good: '분위기 메이커',
+    goodDesc: '내가 계획하면 얘가 분위기 만들어줘서 완벽한 조합',
+    find: '<strong>약속을 지키는 사람</strong>이 중요해요. 믿을 수 있고, 함께할 때 적극적인 사람. <strong>함께 뭔가를 만들어가는 것 자체를 즐기는 사람</strong>과 잘 맞아요.',
+    advice: [
+      { icon: '🎲', text: '<strong>가끔은 즉흥도 괜찮아요.</strong> 계획 없는 순간도 추억이 될 수 있어요.' },
+      { icon: '💆', text: '<strong>친구들도 계획에 참여하게 해봐요.</strong> 다 혼자 하면 나중에 지쳐요.' },
+      { icon: '😌', text: '<strong>어긋나도 괜찮아요.</strong> 계획이 틀어졌다고 너무 스트레스받지 않기.' }
+    ]
+  },
+  T6: {
+    name: '직진 팩트봄',
+    en: 'The Straight Shooter',
+    emoji: '🎯',
+    color: '#C0392B',
+    light: '#FDECEA',
+    keywords: ['팩폭의 왕', '직접적 표현', '빠른 갈등 해결', '진짜 말해주는 친구', '가식 없음'],
+    desc: '불편해도 필요한 말은 해주는 친구. 당장은 쓴소리처럼 들려도 나중에 보면 제일 도움됐던 말을 해주는 타입이에요. 가식 없이 솔직해서 신뢰도 높지만 가끔 표현이 직접적이어서 오해를 살 수 있어요.',
+    best: '공감 마스터',
+    bestDesc: '내가 팩트 말할 때 감정적으로 달래줘서 균형이 맞음',
+    good: '인생 계획러',
+    goodDesc: '둘 다 효율적이고 명확해서 같이 있으면 일 처리 빠름',
+    find: '<strong>솔직함을 받아줄 수 있는 사람</strong>이 필요해요. 내 직접적인 표현을 공격으로 받아들이지 않고, 진심을 알아봐 주는 사람. <strong>서로 할 말은 하는 관계</strong>가 이상적이에요.',
+    advice: [
+      { icon: '🌸', text: '<strong>팩트 앞에 감정을 한 스푼 얹어봐요.</strong> "걱정돼서"라는 말 한 마디가 다 달라져요.' },
+      { icon: '⏰', text: '<strong>타이밍도 중요해요.</strong> 맞는 말도 때를 잘못 고르면 상처가 됩니다.' },
+      { icon: '👂', text: '<strong>먼저 들어주는 것도 연습해봐요.</strong> 해결책보다 공감이 필요한 순간도 있어요.' }
+    ]
+  },
+  T7: {
+    name: '분위기 메이커',
+    en: 'The Vibe Creator',
+    emoji: '🎉',
+    color: '#1A8C82',
+    light: '#E8F7F6',
+    keywords: ['웃음 제조기', '이벤트 기획자', '눈치 빠름', '어디서든 인기', '재미가 최우선'],
+    desc: '어떤 자리에 가도 분위기를 만드는 능력자. 웃음 포인트를 귀신같이 찾아내고, 어색한 자리도 금방 풀어주는 타입이에요. 친구들의 특별한 날을 제일 챙기고 싶어하는 사람.',
+    best: '에너지 메이커',
+    bestDesc: '둘이 만나면 에너지 폭발. 보는 사람도 웃게 됨',
+    good: '인생 계획러',
+    goodDesc: '얘가 계획하면 내가 분위기 만들어주는 완벽 콤비',
+    find: '<strong>같이 있으면 웃을 수 있는 사람</strong>이 제일 좋아요. 내 유머를 받아줄 수 있고, 재미있는 경험을 함께 만들어가는 사람. <strong>긍정적 에너지를 갖고 있는 사람</strong>과 잘 맞아요.',
+    advice: [
+      { icon: '💙', text: '<strong>진지한 순간에도 있어줘요.</strong> 항상 웃겨야 한다는 압박 내려놓기.' },
+      { icon: '🤫', text: '<strong>친구의 무거운 얘기도 들어줘요.</strong> 분위기 전환보다 들어주는 게 필요할 때가 있어요.' },
+      { icon: '🪞', text: '<strong>나도 힘들 때 표현해도 돼요.</strong> 항상 재밌는 사람이어야 한다는 부담 내려놓기.' }
+    ]
+  },
+  T8: {
+    name: '철학 탐구자',
+    en: 'The Deep Thinker',
+    emoji: '🔭',
+    color: '#7D6E8A',
+    light: '#F3F0F6',
+    keywords: ['깊은 대화 좋아함', '소수 정예', '관찰력 뛰어남', '1:1 선호', '자기만의 세계관'],
+    desc: '인생, 관계, 의미에 대해 깊이 생각하는 친구. 가볍게 수다 떠는 것보단 진짜 얘기 나눌 수 있는 관계를 선호해요. 겉으로는 조용해 보여도 머릿속에는 항상 뭔가 돌아가고 있는 타입.',
+    best: '공감 마스터',
+    bestDesc: '내 복잡한 생각도 끝까지 들어주고 공감해줌',
+    good: '든든한 버팀목',
+    goodDesc: '말은 없어도 서로 신뢰하는 묵직한 관계',
+    find: '<strong>깊은 대화가 가능한 사람</strong>이 좋아요. 가볍고 피상적인 대화보다 진심 어린 얘기를 나눌 수 있는 사람. <strong>서로의 다름을 존중하고 이해하려는 사람</strong>과 잘 맞아요.',
+    advice: [
+      { icon: '🌤️', text: '<strong>가벼운 관계도 나쁘지 않아요.</strong> 모든 대화가 깊어야 할 필요는 없어요.' },
+      { icon: '🤸', text: '<strong>먼저 다가가는 것도 연습해봐요.</strong> 기다리다 보면 인연을 놓쳐요.' },
+      { icon: '😄', text: '<strong>재미도 삶의 중요한 부분이에요.</strong> 가끔은 그냥 웃는 것도 괜찮아요.' }
+    ]
+  }
+};
+
+const TYPE_ORDER = ['T1','T2','T3','T4','T5','T6','T7','T8'];
+let scores = {};
+TYPE_ORDER.forEach(t => scores[t] = 0);
+const TOTAL_Q = 20;
+
+function startQuiz() {
+  document.getElementById('cover').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  showQ(1);
+  window.scrollTo(0, 0);
+}
+
+function showQ(n) {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('q' + n);
+  if (card) {
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = '';
+    card.classList.add('active');
+  }
+  document.getElementById('q-current').textContent = n;
+  document.getElementById('q-fill').style.width = ((n - 1) / TOTAL_Q * 100) + '%';
+  window.scrollTo(0, 0);
+}
+
+function answer(qNum, type) {
+  scores[type]++;
+  const card = document.getElementById('q' + qNum);
+  card.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  setTimeout(() => {
+    if (qNum < TOTAL_Q) showQ(qNum + 1);
+    else showResult();
+  }, 300);
+}
+
+function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  window.scrollTo(0, 0);
+
+  const sorted = TYPE_ORDER.slice().sort((a, b) => scores[b] - scores[a]);
+  const winner = sorted[0];
+  const t = TYPES[winner];
+
+  // 헤더
+  document.getElementById('hero-bg').style.background =
+    `radial-gradient(ellipse 100% 100% at 50% 0%, ${t.color}22 0%, transparent 70%)`;
+  const badge = document.getElementById('result-badge');
+  badge.textContent = t.name;
+  badge.style.background = t.light;
+  badge.style.color = t.color;
+  badge.style.borderColor = t.color;
+  document.getElementById('result-emoji').textContent = t.emoji;
+  document.getElementById('result-name').textContent = t.name;
+  document.getElementById('result-name').style.color = t.color;
+  document.getElementById('result-en').textContent = t.en;
+  document.getElementById('result-desc').textContent = t.desc;
+
+  // 점수 바
+  const total = TYPE_ORDER.reduce((s, k) => s + scores[k], 0);
+  const barsWrap = document.getElementById('score-bars');
+  barsWrap.innerHTML = '';
+  TYPE_ORDER.forEach(k => {
+    const tp = TYPES[k];
+    const pct = Math.round(scores[k] / total * 100);
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <div class="score-label-wrap">
+        <div class="score-dot" style="background:${tp.color}"></div>
+        <div class="score-label" style="color:${tp.color}">${tp.name}</div>
+      </div>
+      <div class="score-track"><div class="score-fill" id="bar-${k}" style="background:${tp.color}"></div></div>
+      <div class="score-val" style="color:${tp.color}" id="val-${k}">0%</div>`;
+    barsWrap.appendChild(row);
+  });
+  setTimeout(() => {
+    TYPE_ORDER.forEach(k => {
+      const pct = Math.round(scores[k] / total * 100);
+      document.getElementById('bar-' + k).style.width = pct + '%';
+      document.getElementById('val-' + k).textContent = pct + '%';
+    });
+  }, 300);
+
+  // 키워드 태그
+  const tagWrap = document.getElementById('keyword-tags');
+  tagWrap.innerHTML = '';
+  t.keywords.forEach(kw => {
+    const span = document.createElement('span');
+    span.className = 'keyword-tag';
+    span.textContent = kw;
+    span.style.color = t.color;
+    span.style.borderColor = t.color;
+    span.style.background = t.light;
+    tagWrap.appendChild(span);
+  });
+
+  // 궁합
+  document.getElementById('best-name').textContent = t.best;
+  document.getElementById('best-name').style.color = t.color;
+  document.getElementById('best-desc').textContent = t.bestDesc;
+  document.getElementById('good-name').textContent = t.good;
+  document.getElementById('good-name').style.color = t.color;
+  document.getElementById('good-desc').textContent = t.goodDesc;
+
+  // 이런 친구
+  document.getElementById('find-text').innerHTML = t.find;
+
+  // 조언
+  const advWrap = document.getElementById('advice-list');
+  advWrap.innerHTML = '';
+  t.advice.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'advice-item';
+    div.innerHTML = `<div class="advice-icon">${a.icon}</div><div class="advice-text">${a.text}</div>`;
+    advWrap.appendChild(div);
+  });
+}
+
+function restartTest() {
+  TYPE_ORDER.forEach(t => scores[t] = 0);
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('cover').style.display = 'flex';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
