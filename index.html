@@ -199,28 +199,10 @@ body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sa
   font-size: 17px; letter-spacing: 0.05em;
   border-radius: 999px; cursor: pointer;
   transition: transform 0.12s, box-shadow 0.12s;
-  position: relative;
 }
 
 .complete-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #3D2C2C; }
 .complete-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #3D2C2C; }
-.complete-btn:disabled { background: #ccc; border-color: #aaa; box-shadow: 2px 2px 0 #aaa; cursor: not-allowed; transform: none; }
-
-.complete-status {
-  font-family: 'Gaegu', cursive;
-  font-size: 13px; color: #A08080;
-  min-height: 20px;
-}
-
-.sending-spinner {
-  display: inline-block; width: 12px; height: 12px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: white; border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin-right: 6px; vertical-align: middle;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── 완료 오버레이 ── */
 #complete-overlay {
@@ -233,14 +215,8 @@ body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sa
 #complete-overlay.show { display: flex; }
 
 .overlay-emoji { font-size: 4rem; margin-bottom: 1rem; animation: pop 0.4s ease; }
-.overlay-title {
-  font-family: 'Black Han Sans', sans-serif;
-  font-size: 1.8rem; color: #E87EA1; margin-bottom: 0.75rem;
-}
-.overlay-desc {
-  font-family: 'Gaegu', cursive;
-  font-size: 16px; color: #A08080; line-height: 1.8;
-}
+.overlay-title { font-family: 'Black Han Sans', sans-serif; font-size: 1.8rem; color: #E87EA1; margin-bottom: 0.75rem; }
+.overlay-desc  { font-family: 'Gaegu', cursive; font-size: 16px; color: #A08080; line-height: 1.8; }
 
 @keyframes pop {
   0%   { transform: scale(0.5); opacity: 0; }
@@ -446,6 +422,28 @@ body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sa
 @media (max-width: 480px) {
   .compat-grid { grid-template-columns: 1fr; }
 }
+
+/* 📸 캡처 카드 */
+#capture-card { position:fixed; top:0; left:-9999px; width:390px; }
+.save-result-btn {
+  background: #3D6B8E;
+  color: #fff;
+  border: 3px solid #1a1a1a;
+  padding: 13px 40px;
+  font-size: 16px; font-weight: 700;
+  font-family: inherit;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.18);
+  transition: transform 0.12s, box-shadow 0.12s;
+  margin-bottom: 8px;
+  display: block; margin: 0 auto 8px;
+}
+.save-result-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(0,0,0,0.18); }
+.save-result-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.18); }
+.save-result-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.save-hint-txt { text-align:center; font-size:13px; color:#999; min-height:18px; }
+
 </style>
 </head>
 <body>
@@ -956,8 +954,11 @@ body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sa
   </div>
 
   <div class="complete-section">
+    <!-- 캡처 카드 -->
+    <div id="capture-card"></div>
+    <button class="save-result-btn" id="save-result-btn" onclick="saveResult()">📸 결과 저장하기</button>
+    <p class="save-hint-txt" id="save-hint-txt"></p>
     <button class="complete-btn" id="complete-btn" onclick="completeTest()">테스트 완료하기 🌸</button>
-    <p class="complete-status" id="complete-status"></p>
   </div>
 
 </section>
@@ -1125,14 +1126,11 @@ const TYPES = {
   }
 };
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWLZk8Nj88v1qn0kRnmZTL0jiJVeV5csV72qY4eGeWwOb1jLi-sX4zHCqvTrznM6lP/exec';
-const TO_EMAIL   = 'kkr@gabiacns.com';
-
 const TYPE_ORDER = ['T1','T2','T3','T4','T5','T6','T7','T8'];
 let scores = {};
 TYPE_ORDER.forEach(t => scores[t] = 0);
 const TOTAL_Q = 20;
-let userName  = '';
+let userName = '';
 let winnerResult = null;
 
 /* 이름 입력 후 시작 */
@@ -1273,75 +1271,14 @@ function showResult() {
 }
 
 /* 테스트 완료 버튼 */
-async function completeTest() {
-  const btn    = document.getElementById('complete-btn');
-  const status = document.getElementById('complete-status');
+function completeTest() {
+  const t = winnerResult ? winnerResult.type : TYPES[TYPE_ORDER[0]];
 
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sending-spinner"></span>전송 중...';
-  status.textContent = '결과를 메일로 보내는 중이에요 ✉️';
+  document.getElementById('overlay-desc').innerHTML =
+    `<strong>${userName}</strong>님은<br>${t.emoji} <strong>${t.name}</strong>이에요!<br><br>잠시 후 창이 닫힐 거예요 🌸`;
+  document.getElementById('complete-overlay').classList.add('show');
 
-  const total  = TYPE_ORDER.reduce((s, k) => s + scores[k], 0);
-  const t      = winnerResult ? winnerResult.type : TYPES[TYPE_ORDER[0]];
-
-  // 이메일 본문 구성
-  let scoreLines = TYPE_ORDER.map(k => {
-    const pct = Math.round(scores[k] / total * 100);
-    return `${TYPES[k].name}: ${pct}%`;
-  }).join('\n');
-
-  const emailBody =
-`[친구 궁합 테스트 결과]
-작성자: ${userName}
-제출 시각: ${new Date().toLocaleString('ko-KR')}
-
-━━━━━━━━━━━━━━━━━━
-유형: ${t.emoji} ${t.name} (${t.en})
-━━━━━━━━━━━━━━━━━━
-${t.desc}
-
-[성향 점수]
-${scoreLines}
-
-[찰떡 궁합] ${t.best}
-${t.bestDesc}
-
-[의외로 잘 맞음] ${t.good}
-${t.goodDesc}
-`;
-
-  const payload = {
-    email:     TO_EMAIL,
-    name:      userName,
-    type:      t.name,
-    typeEn:    t.en,
-    emoji:     t.emoji,
-    checked:   TYPE_ORDER.map(k => `${TYPES[k].name}: ${Math.round(scores[k]/total*100)}%`),
-    notes:     '',
-    emailBody: emailBody
-  };
-
-  try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload)
-    });
-
-    // 완료 오버레이 표시
-    document.getElementById('overlay-desc').innerHTML =
-      `<strong>${userName}</strong>님의 결과가<br>메일로 전송됐어요 💌<br><br>잠시 후 창이 닫힐 거예요 🌸`;
-    document.getElementById('complete-overlay').classList.add('show');
-
-    // 3초 후 창 닫기
-    setTimeout(() => { window.close(); }, 3000);
-
-  } catch (e) {
-    btn.disabled = false;
-    btn.innerHTML = '테스트 완료하기 🌸';
-    status.textContent = '전송에 실패했어요. 다시 시도해주세요 🥺';
-  }
+  setTimeout(() => { window.close(); }, 3000);
 }
 
 function restartTest() {
@@ -1353,6 +1290,63 @@ function restartTest() {
   document.getElementById('result').style.display = 'none';
   document.getElementById('cover').style.display = 'flex';
   window.scrollTo(0, 0);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+async function saveResult() {
+  const btn = document.getElementById('save-result-btn');
+  const hint = document.getElementById('save-hint-txt');
+  if (!winnerResult) { hint.textContent = '먼저 테스트를 완료해주세요!'; return; }
+  btn.disabled = true; btn.textContent = '⏳ 저장 중...'; hint.textContent = '';
+  try {
+    const t = winnerResult.type;
+    const total = TYPE_ORDER.reduce((s,k)=>s+scores[k],0)||1;
+    const card = document.getElementById('capture-card');
+    card.style.cssText = 'position:fixed;top:0;left:-9999px;width:390px;background:#F5F3EE;padding:28px 22px 24px;font-family:Noto Sans KR,sans-serif';
+    const accentHex = t.color.startsWith('var(') ? '#3D6B8E' : t.color;
+    const lightBg = t.light.startsWith('var(') ? '#EBF1F7' : t.light;
+    const bars = TYPE_ORDER.map(k=>{
+      const tp=TYPES[k]; const pct=Math.round(scores[k]/total*100);
+      const tc = tp.color.startsWith('var(') ? '#3D6B8E' : tp.color;
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:${tc};min-width:100px">${tp.name}</div>
+        <div style="flex:1;height:7px;background:#E5E2DB;border-radius:999px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${tc};border-radius:999px"></div></div>
+        <div style="font-size:13px;font-weight:700;color:${tc};min-width:30px;text-align:right">${pct}%</div></div>`;
+    }).join('');
+    const kw = (t.keywords||[]).map(w=>`<span style="display:inline-block;font-size:13px;font-weight:500;padding:4px 12px;border-radius:999px;border:1.5px solid ${accentHex};color:${accentHex};background:${lightBg};margin:3px">${w}</span>`).join('');
+    const adv = (t.advice||[]).slice(0,3).map(a=>`<div style="display:flex;gap:8px;margin-bottom:8px"><div style="min-width:18px">${a.icon||a.i||'✨'}</div><div style="font-size:13px;color:#5C5448;line-height:1.7">${(a.text||a.t||'').replace(/<[^>]*>/g,'')}</div></div>`).join('');
+    card.innerHTML = `
+      <div style="text-align:center;padding-bottom:16px;border-bottom:1px solid #DEDAD2;margin-bottom:16px">
+        <div style="font-size:13px;color:#8C8880;margin-bottom:6px">친구 궁합 테스트 결과</div>
+        <div style="font-size:50px;margin-bottom:8px">${t.emoji||'🌸'}</div>
+        <div style="font-size:13px;font-weight:700;padding:4px 14px;border-radius:999px;display:inline-block;border:1.5px solid ${accentHex};color:${accentHex};background:${lightBg};margin-bottom:10px">${t.name}</div>
+        <div style="font-size:24px;font-weight:700;color:${accentHex};margin-bottom:10px">${t.name}</div>
+        <div style="font-size:14px;color:#5C5448;line-height:1.8">${t.desc}</div>
+      </div>
+      <div style="margin-bottom:14px"><div style="font-size:14px;font-weight:700;color:#1C1B18;margin-bottom:8px">🏷️ 키워드</div><div style="display:flex;flex-wrap:wrap">${kw}</div></div>
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #DEDAD2"><div style="font-size:14px;font-weight:700;color:#1C1B18;margin-bottom:10px">📊 성향 분석</div>${bars}</div>
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #DEDAD2">
+        <div style="font-size:14px;font-weight:700;color:#1C1B18;margin-bottom:8px">💞 친구 궁합</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:#fff;border:1px solid #DEDAD2;border-radius:12px;padding:10px">
+            <div style="font-size:13px;color:#8C8880;margin-bottom:4px;font-weight:700">💛 찰떡 친구</div>
+            <div style="font-size:14px;font-weight:700;color:${accentHex};margin-bottom:3px">${t.best||''}</div>
+            <div style="font-size:13px;color:#8C8880;line-height:1.5">${t.bestDesc||t.bestD||''}</div></div>
+          <div style="background:#fff;border:1px solid #DEDAD2;border-radius:12px;padding:10px">
+            <div style="font-size:13px;color:#8C8880;margin-bottom:4px;font-weight:700">⚡ 잘 맞음</div>
+            <div style="font-size:14px;font-weight:700;color:${accentHex};margin-bottom:3px">${t.good||''}</div>
+            <div style="font-size:13px;color:#8C8880;line-height:1.5">${t.goodDesc||t.goodD||''}</div></div></div></div>
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #DEDAD2"><div style="font-size:14px;font-weight:700;color:#1C1B18;margin-bottom:8px">💌 조언</div>${adv}</div>
+      <div style="text-align:center;font-size:13px;color:#8C8880;margin-top:8px">${userName}님의 친구 궁합 테스트 결과</div>`;
+    const canvas = await html2canvas(card,{backgroundColor:'#F5F3EE',scale:2,useCORS:true,logging:false,width:390,windowWidth:390});
+    const link = document.createElement('a');
+    link.download = `친구궁합테스트_${userName}_${t.name}.png`;
+    link.href = canvas.toDataURL('image/png'); link.click();
+    btn.disabled=false; btn.textContent='✅ 저장 완료!'; hint.textContent='이미지가 저장됐어요 📸';
+    setTimeout(()=>{btn.textContent='📸 결과 저장하기';hint.textContent='';},2500);
+  } catch(e) { console.error(e); btn.disabled=false; btn.textContent='📸 결과 저장하기'; hint.textContent='저장 실패. 다시 시도해주세요 🥺'; }
 }
 </script>
 </body>
